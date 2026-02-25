@@ -46,16 +46,13 @@ window.onload = function () {
 
       const rendition = book.renderTo("viewer", {
         width: "100%",
-        height: "100%"
+        height: "100%",
+        allowScriptedContent: true   // 🔥 추가
       });
 
       book.ready
+        .then(() => book.loaded.navigation)
         .then(() => {
-          console.log("BOOK READY");
-          return book.loaded.navigation;
-        })
-        .then(() => {
-          console.log("NAV READY");
           rendition.display();
         })
         .catch((err) => {
