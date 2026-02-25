@@ -27,7 +27,7 @@ html, body {
 <script>
 console.log("epub.js loaded?", typeof ePub);
 
-var book = ePub("https://wegee-eui.github.io/W.B-e-Book/book.epub");
+var book = ePub("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
 
 book.ready
   .then(() => {
