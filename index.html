@@ -1,38 +1,40 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <title>EPUB Viewer</title>
+<meta charset="utf-8">
+<title>EPUB Test</title>
 
-  <!-- epub.js CDN -->
-  <script src="https://unpkg.com/epubjs/dist/epub.min.js"></script>
+<script src="https://unpkg.com/epubjs/dist/epub.min.js"></script>
 
-  <style>
-    html, body {
-      margin: 0;
-      height: 100%;
-    }
+<style>
+html, body {
+  margin: 0;
+  height: 100%;
+}
 
-    #viewer {
-      width: 100%;
-      height: 100vh;
-      background: white;
-    }
-  </style>
+#viewer {
+  width: 100%;
+  height: 100vh;
+  background: white;
+}
+</style>
 </head>
 
 <body>
-  <div id="viewer"></div>
 
-  <script>
-    const book = ePub("epub_w.b.epub"); // ← epub 파일명 맞추기
-    const rendition = book.renderTo("viewer", {
-      width: "100%",
-      height: "100%",
-      spread: "auto"
-    });
+<div id="viewer"></div>
 
-    rendition.display();
-  </script>
+<script>
+console.log("epub.js loaded?", typeof ePub);
+
+var book = ePub("book.epub");
+var rendition = book.renderTo("viewer", {
+  width: "100%",
+  height: "100%"
+});
+
+rendition.display();
+</script>
+
 </body>
 </html>
