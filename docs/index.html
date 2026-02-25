@@ -27,7 +27,7 @@ html, body {
 <script>
 console.log("epub.js loaded?", typeof ePub);
 
-var book = ePub("book.epub");
+var book = ePub("./book.epub");
 
 book.ready
   .then(() => {
