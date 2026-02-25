@@ -2,13 +2,14 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>EPUB Test</title>
+<title>EPUB Viewer</title>
 
 <script src="https://unpkg.com/epubjs/dist/epub.min.js"></script>
 
 <style>
 html, body {
   margin: 0;
+  padding: 0;
   height: 100%;
 }
 
@@ -27,26 +28,37 @@ html, body {
 <script>
 console.log("epub.js loaded?", typeof ePub);
 
-var book = ePub("https://s3.amazonaws.com/moby-dick/moby-dick.epub");
-
-book.ready
-  .then(() => {
-    console.log("BOOK READY");
-    return book.loaded.navigation;
+fetch("./book.epub")
+  .then((res) => {
+    console.log("Fetch status:", res.status);
+    return res.arrayBuffer();
   })
-  .then(() => {
-    console.log("NAV READY");
+  .then((buffer) => {
+    console.log("EPUB LOADED BUFFER");
+
+    const book = ePub(buffer);
+
+    const rendition = book.renderTo("viewer", {
+      width: "100%",
+      height: "100%"
+    });
+
+    book.ready
+      .then(() => {
+        console.log("BOOK READY");
+        return book.loaded.navigation;
+      })
+      .then(() => {
+        console.log("NAV READY");
+        rendition.display();
+      })
+      .catch((err) => {
+        console.error("BOOK ERROR:", err);
+      });
   })
   .catch((err) => {
-    console.error("BOOK ERROR:", err);
+    console.error("FETCH ERROR:", err);
   });
-
-var rendition = book.renderTo("viewer", {
-  width: "100%",
-  height: "100%"
-});
-
-rendition.display();
 </script>
 
 </body>
