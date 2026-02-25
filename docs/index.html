@@ -25,12 +25,22 @@ html, body {
 <div id="viewer"></div>
 
 <script>
+<script>
 console.log("epub.js loaded?", typeof ePub);
 
 var book = ePub("epub_w.b.epub");
 
-book.ready.then(() => console.log("BOOK READY"));
-book.loaded.navigation.then(() => console.log("NAV READY"));
+book.ready
+  .then(() => {
+    console.log("BOOK READY");
+    return book.loaded.navigation;
+  })
+  .then(() => {
+    console.log("NAV READY");
+  })
+  .catch((err) => {
+    console.error("BOOK ERROR:", err);
+  });
 
 var rendition = book.renderTo("viewer", {
   width: "100%",
@@ -38,6 +48,7 @@ var rendition = book.renderTo("viewer", {
 });
 
 rendition.display();
+</script>
 </script>
 
 </body>
