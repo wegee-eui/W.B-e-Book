@@ -4,7 +4,15 @@
 <meta charset="utf-8">
 <title>EPUB Viewer</title>
 
+<!-- 1️⃣ JSZip 먼저 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+
+<!-- 2️⃣ 전역 연결 보장 (중요!) -->
+<script>
+window.JSZip = window.JSZip || JSZip;
+</script>
+
+<!-- 3️⃣ 그 다음 epub.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/epub.js/0.3.93/epub.min.js"></script>
 
 <style>
