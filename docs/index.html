@@ -116,39 +116,37 @@ html, body {
 
 <script>
 window.onload = function () {
-  console.log("epub.js loaded?", typeof ePub);
 
   fetch("./book.epub")
-    .then(res => {
-      console.log("Fetch status:", res.status);
-      return res.arrayBuffer();
-    })
+    .then(res => res.arrayBuffer())
     .then(buffer => {
-      console.log("EPUB LOADED BUFFER");
 
       const book = ePub(buffer);
 
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      let currentSpread = isMobile ? "none" : "auto";
+      let currentSpread = isMobile ? "none" : "both";
 
       const rendition = book.renderTo("viewer", {
         width: "100%",
         height: "100%",
-        spread: currentSpread,
         flow: "paginated",
+        spread: currentSpread,
         manager: "default",
-        snap: true
+        snap: true,
+        renditionLayout: "reflowable"   // 🔥 강제 변경
       });
 
-      // ✅ 첫 페이지부터 시작
       book.ready.then(() => {
-        console.log("BOOK READY");
-        rendition.display(1);
+
+        // 🔥 첫 spine 아이템을 명확히 왼쪽 시작으로
+        const first = book.spine.get(0);
+        rendition.display(first.href);
+
       });
 
-      // =========================
-      // 버튼 기능
-      // =========================
+      // ====================
+      // 페이지 버튼
+      // ====================
 
       document.getElementById("nextBtn").onclick = () => {
         rendition.next();
@@ -158,9 +156,12 @@ window.onload = function () {
         rendition.prev();
       };
 
+      // ====================
       // 모바일 보기 전환
+      // ====================
+
       function toggleSpread() {
-        currentSpread = currentSpread === "none" ? "auto" : "none";
+        currentSpread = currentSpread === "none" ? "both" : "none";
         rendition.spread(currentSpread);
         rendition.resize();
 
@@ -169,8 +170,8 @@ window.onload = function () {
       }
 
       document.getElementById("viewToggle").onclick = toggleSpread;
-    })
-    .catch(err => console.error("FETCH ERROR:", err));
+
+    });
 };
 </script>
 
