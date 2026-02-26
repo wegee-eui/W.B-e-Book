@@ -124,7 +124,7 @@ window.onload = function () {
       const book = ePub(buffer);
 
       const isMobile = window.matchMedia("(max-width: 768px)").matches;
-      let currentSpread = isMobile ? "none" : "both";
+      let currentSpread = isMobile ? "none" : "auto";
 
       let rendition;
 
@@ -170,20 +170,20 @@ window.onload = function () {
       // ====================
       // 모바일 보기 전환
       // ====================
+      
+function toggleSpread() {
+  const currentLocation = rendition.currentLocation();
 
-      function toggleSpread() {
+  // 🔥 both → auto 로 변경
+  currentSpread = currentSpread === "none" ? "auto" : "none";
 
-        const currentLocation = rendition.currentLocation();
+  createRendition(currentSpread, currentLocation);
 
-        currentSpread = currentSpread === "none" ? "both" : "none";
+  document.getElementById("viewToggle").textContent =
+    currentSpread === "none" ? "펼쳐보기" : "한 장 보기";
+}
 
-        createRendition(currentSpread, currentLocation);
-
-        document.getElementById("viewToggle").textContent =
-          currentSpread === "none" ? "펼쳐보기" : "한 장 보기";
-      }
-
-      document.getElementById("viewToggle").onclick = toggleSpread;
+document.getElementById("viewToggle").onclick = toggleSpread;
 
     });
 };
