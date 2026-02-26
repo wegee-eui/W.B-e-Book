@@ -7,7 +7,7 @@
 <!-- JSZip -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
 
-<!-- epub.js (안정 CDN) -->
+<!-- epub.js -->
 <script src="https://unpkg.com/epubjs@0.3.93/dist/epub.min.js"></script>
 
 <style>
@@ -25,16 +25,16 @@ html, body {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px;   /* 항상 여백 유지 */
+  padding: 40px;
   box-sizing: border-box;
 }
 
 /* 책 컨테이너 */
 #book-wrap {
-  aspect-ratio: 200 / 185;   /* 데스크탑 기본 */
-  height: min(85vh, 900px);  /* 🔥 세로 기준으로 먼저 맞춘다 */
-  width: auto;               /* 가로는 비율로 자동 계산 */
-  max-width: 95vw;           /* 화면 넘지 않게 */
+  aspect-ratio: 200 / 185;
+  height: min(85vh, 900px);
+  width: auto;
+  max-width: 95vw;
   background: #fff;
   border-radius: 16px;
   overflow: hidden;
@@ -48,6 +48,42 @@ html, body {
   height: 100%;
 }
 
+/* 페이지 버튼 */
+#prevBtn, #nextBtn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 40px;
+  background: none;
+  border: none;
+  color: white;
+  cursor: pointer;
+  z-index: 10;
+  opacity: .6;
+}
+
+#prevBtn:hover,
+#nextBtn:hover {
+  opacity: 1;
+}
+
+#prevBtn { left: 20px; }
+#nextBtn { right: 20px; }
+
+/* 모바일 토글 버튼 */
+#viewToggle {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.6);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 20;
+}
+
 /* 모바일 */
 @media (max-width: 768px) {
   #book-wrap {
@@ -55,7 +91,13 @@ html, body {
     height: 85vh;
   }
 }
-  
+
+/* 데스크탑에서는 토글 숨김 */
+@media (min-width: 769px) {
+  #viewToggle {
+    display: none;
+  }
+}
 </style>
 </head>
 
@@ -64,6 +106,11 @@ html, body {
 <div id="stage">
   <div id="book-wrap">
     <div id="viewer"></div>
+
+    <!-- UI -->
+    <button id="prevBtn">‹</button>
+    <button id="nextBtn">›</button>
+    <button id="viewToggle">펼쳐보기</button>
   </div>
 </div>
 
@@ -81,23 +128,51 @@ window.onload = function () {
 
       const book = ePub(buffer);
 
-const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      const isMobile = window.matchMedia("(max-width: 768px)").matches;
+      let currentSpread = isMobile ? "none" : "auto";
 
-const rendition = book.renderTo("viewer", {
-  width: "100%",
-  height: "100%",
-  spread: isMobile ? "none" : "auto",
-  flow: "paginated"
-});
+      const rendition = book.renderTo("viewer", {
+        width: "100%",
+        height: "100%",
+        spread: currentSpread,
+        flow: "paginated",
+        manager: "default",
+        snap: true
+      });
 
+      // ✅ 첫 페이지부터 시작
       book.ready.then(() => {
         console.log("BOOK READY");
-        rendition.display();
+        rendition.display(1);
       });
+
+      // =========================
+      // 버튼 기능
+      // =========================
+
+      document.getElementById("nextBtn").onclick = () => {
+        rendition.next();
+      };
+
+      document.getElementById("prevBtn").onclick = () => {
+        rendition.prev();
+      };
+
+      // 모바일 보기 전환
+      function toggleSpread() {
+        currentSpread = currentSpread === "none" ? "auto" : "none";
+        rendition.spread(currentSpread);
+        rendition.resize();
+
+        document.getElementById("viewToggle").textContent =
+          currentSpread === "none" ? "펼쳐보기" : "한 장 보기";
+      }
+
+      document.getElementById("viewToggle").onclick = toggleSpread;
     })
     .catch(err => console.error("FETCH ERROR:", err));
 };
 </script>
-  
+
 </body>
 </html>
